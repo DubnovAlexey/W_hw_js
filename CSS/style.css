@@ -6,7 +6,7 @@ html, body {
 
 body {
     overflow: hidden;
-    background: linear-gradient(to bottom right, rgba(168, 231, 231, 0.33), #e7e5cf);
+    background: linear-gradient(to bottom right, rgba(168, 231, 231, 0.33), #f1ecb4);
     display: flex;
     justify-content: center;
     align-items: center;

@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const r = (bigint >> 16) & 255;
         const g = (bigint >> 8) & 255;
         const b = bigint & 255;
-        return { r, g, b };
+        return {r, g, b};
     }
 
     class Particle {
@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
             for (let i = 0; i < this.numVertices; i++) {
                 const angle = (Math.PI * 2 / this.numVertices) * i + (Math.random() * 0.5 - 0.25);
                 const radius = this.initialSize * (Math.random() * 0.5 + 0.5);
-                this.vertices.push({ x: Math.cos(angle) * radius, y: Math.sin(angle) * radius });
+                this.vertices.push({x: Math.cos(angle) * radius, y: Math.sin(angle) * radius});
             }
 
             this.velocity = {
@@ -51,7 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             ctx.save();
             ctx.globalAlpha = 1;
-            const { r, g, b } = this.initialColor;
+            const {r, g, b} = this.initialColor;
             ctx.fillStyle = `rgb(${r * finalBrightness}, ${g * finalBrightness}, ${b * finalBrightness})`;
 
             ctx.translate(this.x, this.y);
@@ -192,6 +192,7 @@ function sumEventDigits(num) {
     }
     return sum;
 }
+
 const num = 1234567;
 const result = sumEventDigits(num);
 console.log(`result = ${result}`);
