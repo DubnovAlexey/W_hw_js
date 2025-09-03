@@ -13,8 +13,8 @@ body {
 }
 
 .btn-custom-orange:hover {
-    background-color: #E64A2F;
-    border-color: #E64A2F;
+    background-color: rgba(162, 244, 8, 0.93);
+    border-color: rgb(246, 233, 3);
 }
 
 #explosion-canvas {
@@ -39,5 +39,5 @@ body {
 }
 
 .blinking-button {
-    animation: blink 1s infinite;
+    animation: blink 0.3s infinite;
 }
