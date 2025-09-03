@@ -1,11 +1,43 @@
+html, body {
+    height: 100%;
+}
+
+body {
+    overflow: hidden;
+}
+
 .btn-custom-orange {
     background-color: #FF5733;
     border-color: #FF5733;
     color: #fff;
-
 }
 
 .btn-custom-orange:hover {
     background-color: #E64A2F;
     border-color: #E64A2F;
+}
+
+#explosion-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    pointer-events: none;
+}
+
+/* Here is the new CSS for the blinking effect */
+@keyframes blink {
+    0% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.2;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+.blinking-button {
+    animation: blink 1s infinite;
 }
