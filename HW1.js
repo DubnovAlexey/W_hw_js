@@ -17,49 +17,49 @@ document.addEventListener('DOMContentLoaded', () => {
         constructor(x, y, color) {
             this.x = x;
             this.y = y;
-            this.z = Math.random() * 20;
             this.color = color;
             this.initialColor = hexToRgb(color);
             this.alpha = 1;
-            this.initialSize = Math.random() * 4 + 4;
-
+            this.initialSize = Math.random() * 7 + 3;
             this.numVertices = Math.floor(Math.random() * 4) + 3;
             this.vertices = [];
-
             for (let i = 0; i < this.numVertices; i++) {
                 const angle = (Math.PI * 2 / this.numVertices) * i + (Math.random() * 0.5 - 0.25);
                 const radius = this.initialSize * (Math.random() * 0.5 + 0.5);
-                this.vertices.push({
-                    x: Math.cos(angle) * radius,
-                    y: Math.sin(angle) * radius
-                });
+                this.vertices.push({ x: Math.cos(angle) * radius, y: Math.sin(angle) * radius });
             }
 
-            // Увеличиваем диапазон скорости для хаотичности
+            // Немного уменьшенная начальная скорость для более спокойного разлёта
             this.velocity = {
-                x: (Math.random() - 0.5) * (15 + this.z * 0.75),
-                y: (Math.random() - 0.5) * (15 + this.z * 0.75)
+                x: (Math.random() - 0.5) * (4 + Math.random() * 4),
+                y: (Math.random() - 0.5) * (4 + Math.random() * 4)
             };
-            // Добавляем случайное вращение
+
             this.rotation = Math.random() * Math.PI * 2;
-            this.rotationSpeed = (Math.random() - 0.5) * 0.1;
+            this.rotationSpeed = (Math.random() - 0.5) * 0.05;
+            this.pulseSpeed = Math.random() * 0.03 + 0.003;
+            this.pulsePhase = Math.random() * Math.PI * 2;
+            this.pulseIntensity = 1;
+
+            this.friction = 0.99999;
+            // Уменьшенная минимальная скорость для ещё более медленного движения
+            this.minVelocity = 0.15;
         }
 
         draw() {
-            const size = this.initialSize * (1 + this.z / 10);
-            const brightness = 1 - (this.z / 20);
+            const size = this.initialSize;
+            const brightness = 0.3 + 0.7 * Math.abs(Math.sin(this.pulsePhase));
+            const finalBrightness = brightness * this.pulseIntensity;
 
             ctx.save();
-            ctx.globalAlpha = this.alpha;
+            ctx.globalAlpha = 1;
 
             const { r, g, b } = this.initialColor;
-            ctx.fillStyle = `rgb(${r * brightness}, ${g * brightness}, ${b * brightness})`;
+            ctx.fillStyle = `rgb(${r * finalBrightness}, ${g * finalBrightness}, ${b * finalBrightness})`;
 
-            // Вращаем канвас
             ctx.translate(this.x, this.y);
             ctx.rotate(this.rotation);
 
-            // Рисуем многоугольник
             ctx.beginPath();
             ctx.moveTo(this.vertices[0].x * size, this.vertices[0].y * size);
             for (let i = 1; i < this.numVertices; i++) {
@@ -67,16 +67,37 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             ctx.closePath();
             ctx.fill();
-
             ctx.restore();
         }
 
         update() {
             this.x += this.velocity.x;
             this.y += this.velocity.y;
-            this.alpha -= 0.0000001;
-            // Обновляем угол вращения
+
+            if (isExplosionOver) {
+                this.velocity.x *= this.friction;
+                this.velocity.y *= this.friction;
+
+                if (Math.abs(this.velocity.x) < this.minVelocity) {
+                    this.velocity.x = this.minVelocity * (this.velocity.x > 0 ? 1 : -1);
+                }
+                if (Math.abs(this.velocity.y) < this.minVelocity) {
+                    this.velocity.y = this.minVelocity * (this.velocity.y > 0 ? 1 : -1);
+                }
+            }
+
+            if (this.x < 0 || this.x > canvas.width) this.velocity.x *= -1;
+            if (this.y < 0 || this.y > canvas.height) this.velocity.y *= -1;
+
+
+            this.pulsePhase += this.pulseSpeed;
             this.rotation += this.rotationSpeed;
+
+            if (this.pulseIntensity > 1) {
+                this.pulseIntensity -= 0.05;
+            } else {
+                this.pulseIntensity = 1;
+            }
         }
     }
 
@@ -86,33 +107,68 @@ document.addEventListener('DOMContentLoaded', () => {
         '#FF8C00', '#c31b1b'
     ];
 
+    let isExplosionOver = false;
+
     function createParticles(x, y) {
-        for (let i = 0; i < 90; i++) {
+        for (let i = 0; i < 150; i++) {
             const color = colors[Math.floor(Math.random() * colors.length)];
             particles.push(new Particle(x, y, color));
+        }
+
+        setTimeout(() => {
+            isExplosionOver = true;
+        }, 500);
+    }
+
+    function handleCollisions() {
+        for (let i = 0; i < particles.length; i++) {
+            for (let j = i + 1; j < particles.length; j++) {
+                const p1 = particles[i];
+                const p2 = particles[j];
+
+                const dx = p2.x - p1.x;
+                const dy = p2.y - p1.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                const minDistance = (p1.initialSize + p2.initialSize) * 0.8;
+
+                if (distance < minDistance) {
+                    const angle = Math.atan2(dy, dx);
+                    const p1NewVelX = p2.velocity.x;
+                    const p1NewVelY = p2.velocity.y;
+                    const p2NewVelX = p1.velocity.x;
+                    const p2NewVelY = p1.velocity.y;
+
+                    p1.velocity.x = p1NewVelX;
+                    p1.velocity.y = p1NewVelY;
+                    p2.velocity.x = p2NewVelX;
+                    p2.velocity.y = p2NewVelY;
+
+                    p1.pulseIntensity = 1.5;
+                    p2.pulseIntensity = 1.5;
+                }
+            }
         }
     }
 
     function animate() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        for (let i = particles.length - 1; i >= 0; i--) {
-            const particle = particles[i];
-            particle.update();
-            particle.draw();
-            if (particle.alpha <= 0.05) {
-                particles.splice(i, 1);
-            }
+
+        for (let i = 0; i < particles.length; i++) {
+            particles[i].update();
+            particles[i].draw();
         }
+
+        handleCollisions();
+
         requestAnimationFrame(animate);
     }
 
     const audio = document.getElementById('bg-music');
     const playButton = document.getElementById('play-btn');
 
-
     const playlist = [
         './music/1.mp3',
-        './music/2.mp3', // Добавь здесь свои треки
+        './music/2.mp3',
         './music/3.mp3',
         './music/4.mp3',
         './music/5.mp3'
@@ -126,12 +182,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     audio.addEventListener('ended', playNextTrack);
-    // ---- Конец кода для музыкального плейлиста ----
 
     if (playButton) {
-        playButton.addEventListener('click', (event) => {
+        playButton.addEventListener('click', () => {
             playButton.style.display = 'none';
-            // Запускаем первый трек из плейлиста
             audio.src = playlist[currentTrackIndex];
             audio.play();
             const x = window.innerWidth / 2;
@@ -143,18 +197,15 @@ document.addEventListener('DOMContentLoaded', () => {
     animate();
 });
 
-function sumEventDigits(num)
-{
+function sumEventDigits(num) {
     let sum = 0;
     while (num > 0) {
         let lastNum = num % 10;
-        if (lastNum % 2 === 0) {
-            sum += lastNum;
-        }
+        if (lastNum % 2 === 0) sum += lastNum;
         num = Math.floor(num / 10);
     }
     return sum;
 }
 const num = 1234567;
 const result = sumEventDigits(num);
-console.log(`result = ${result}`); // Output: result = 12
+console.log(`result = ${result}`);
