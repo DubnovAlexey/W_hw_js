@@ -2,13 +2,42 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Webinar HW1 JS </title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Webinar HW1 JS</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="CSS/style.css" rel="stylesheet"/>
     <script src="HW1.js"></script>
 
 </head>
-<body>
-    <h1>Webinar HW1 JS</h1>
-    <p>Open the console to see the results of the JavaScript code.</p>
+<body class="d-flex justify-content-center align-items-center flex-column min-vh-100">
+
+<audio id="bg-music" loop>
+    <source src="./music/1.mp3" type="audio/mpeg">
+</audio>
+
+<button id="play-btn" class="btn btn-lg btn-custom-orange mb-4">!!!~НАЖАТЬ~!!!</button>
+
+<h1 class="text-center fs-3">Webinar HW1 JS</h1>
+<p class="text-center fs-5">Open the console to see the results of the JavaScript code.</p>
+
+<script>
+
+
+    const audio = document.getElementById('bg-music');
+    const playButton = document.getElementById('play-btn');
+
+    if (playButton) {
+        playButton.addEventListener('click', () => {
+            audio.play();
+            playButton.style.display = 'none';
+        });
+    }
+
+    alert(`Webinar HW1 JS`)
+    alert(`Open the console to see the results of the JavaScript code.`)
+
+</script>
+
 
 </body>
 </html>
