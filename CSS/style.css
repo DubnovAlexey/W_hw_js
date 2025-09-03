@@ -1,17 +1,23 @@
 html, body {
     height: 100%;
+    margin: 0;
+    padding: 0;
 }
 
 body {
     overflow: hidden;
-    background: linear-gradient(to bottom right, rgba(168, 231, 231, 0.33), #e7e5cf) !important;
-
+    background: linear-gradient(to bottom right, rgba(168, 231, 231, 0.33), #e7e5cf);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
 }
 
 .btn-custom-orange {
     background-color: #FF5733;
     border-color: #FF5733;
     color: #fff;
+    font-weight: bold;
 }
 
 .btn-custom-orange:hover {
@@ -27,19 +33,12 @@ body {
     pointer-events: none;
 }
 
-/* Here is the new CSS for the blinking effect */
 @keyframes blink {
-    0% {
-        opacity: 1;
-    }
-    50% {
-        opacity: 0.2;
-    }
-    100% {
-        opacity: 1;
-    }
+    0% { opacity: 1; }
+    50% { opacity: 0.2; }
+    100% { opacity: 1; }
 }
 
 .blinking-button {
-    animation: blink 0.3s infinite;
+    animation: blink 0.7s infinite;
 }

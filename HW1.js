@@ -29,7 +29,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 this.vertices.push({ x: Math.cos(angle) * radius, y: Math.sin(angle) * radius });
             }
 
-            // Немного уменьшенная начальная скорость для более спокойного разлёта
             this.velocity = {
                 x: (Math.random() - 0.5) * (4 + Math.random() * 4),
                 y: (Math.random() - 0.5) * (4 + Math.random() * 4)
@@ -37,13 +36,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
             this.rotation = Math.random() * Math.PI * 2;
             this.rotationSpeed = (Math.random() - 0.5) * 0.05;
-            this.pulseSpeed = Math.random() * 0.03 + 0.003;
+            this.pulseSpeed = Math.random() * 0.02 + 0.002;
             this.pulsePhase = Math.random() * Math.PI * 2;
             this.pulseIntensity = 1;
 
-            this.friction = 0.99999;
-            // Уменьшенная минимальная скорость для ещё более медленного движения
-            this.minVelocity = 0.15;
+            this.friction = 0.9999;
+            this.minVelocity = 0.1;
         }
 
         draw() {
@@ -53,7 +51,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             ctx.save();
             ctx.globalAlpha = 1;
-
             const { r, g, b } = this.initialColor;
             ctx.fillStyle = `rgb(${r * finalBrightness}, ${g * finalBrightness}, ${b * finalBrightness})`;
 
@@ -74,30 +71,25 @@ document.addEventListener('DOMContentLoaded', () => {
             this.x += this.velocity.x;
             this.y += this.velocity.y;
 
-            if (isExplosionOver) {
-                this.velocity.x *= this.friction;
-                this.velocity.y *= this.friction;
-
-                if (Math.abs(this.velocity.x) < this.minVelocity) {
-                    this.velocity.x = this.minVelocity * (this.velocity.x > 0 ? 1 : -1);
-                }
-                if (Math.abs(this.velocity.y) < this.minVelocity) {
-                    this.velocity.y = this.minVelocity * (this.velocity.y > 0 ? 1 : -1);
-                }
+            // Отражение от границ с учётом размера частицы
+            if (this.x - this.initialSize < 0 || this.x + this.initialSize > canvas.width) {
+                this.velocity.x *= -1;
+            }
+            if (this.y - this.initialSize < 0 || this.y + this.initialSize > canvas.height) {
+                this.velocity.y *= -1;
             }
 
-            if (this.x < 0 || this.x > canvas.width) this.velocity.x *= -1;
-            if (this.y < 0 || this.y > canvas.height) this.velocity.y *= -1;
-
-
+            // Плавная пульсация
             this.pulsePhase += this.pulseSpeed;
+
+            // Плавное вращение
             this.rotation += this.rotationSpeed;
 
-            if (this.pulseIntensity > 1) {
-                this.pulseIntensity -= 0.05;
-            } else {
-                this.pulseIntensity = 1;
-            }
+            // Трение и минимальная скорость
+            this.velocity.x *= this.friction;
+            this.velocity.y *= this.friction;
+            if (Math.abs(this.velocity.x) < this.minVelocity) this.velocity.x = this.minVelocity * (this.velocity.x > 0 ? 1 : -1);
+            if (Math.abs(this.velocity.y) < this.minVelocity) this.velocity.y = this.minVelocity * (this.velocity.y > 0 ? 1 : -1);
         }
     }
 
@@ -120,31 +112,27 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 500);
     }
 
+    // Столкновения с вероятностью 20%
     function handleCollisions() {
         for (let i = 0; i < particles.length; i++) {
             for (let j = i + 1; j < particles.length; j++) {
-                const p1 = particles[i];
-                const p2 = particles[j];
-
-                const dx = p2.x - p1.x;
-                const dy = p2.y - p1.y;
-                const distance = Math.sqrt(dx * dx + dy * dy);
-                const minDistance = (p1.initialSize + p2.initialSize) * 0.8;
-
-                if (distance < minDistance) {
-                    const angle = Math.atan2(dy, dx);
-                    const p1NewVelX = p2.velocity.x;
-                    const p1NewVelY = p2.velocity.y;
-                    const p2NewVelX = p1.velocity.x;
-                    const p2NewVelY = p1.velocity.y;
-
-                    p1.velocity.x = p1NewVelX;
-                    p1.velocity.y = p1NewVelY;
-                    p2.velocity.x = p2NewVelX;
-                    p2.velocity.y = p2NewVelY;
-
-                    p1.pulseIntensity = 1.5;
-                    p2.pulseIntensity = 1.5;
+                if (Math.random() > 0.8) {
+                    const p1 = particles[i];
+                    const p2 = particles[j];
+                    const dx = p2.x - p1.x;
+                    const dy = p2.y - p1.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    const minDistance = (p1.initialSize + p2.initialSize) * 0.8;
+                    if (distance < minDistance) {
+                        const tempVelX = p1.velocity.x;
+                        const tempVelY = p1.velocity.y;
+                        p1.velocity.x = p2.velocity.x;
+                        p1.velocity.y = p2.velocity.y;
+                        p2.velocity.x = tempVelX;
+                        p2.velocity.y = tempVelY;
+                        p1.pulseIntensity = 1.5;
+                        p2.pulseIntensity = 1.5;
+                    }
                 }
             }
         }
@@ -152,14 +140,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function animate() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-
         for (let i = 0; i < particles.length; i++) {
             particles[i].update();
             particles[i].draw();
         }
-
         handleCollisions();
-
         requestAnimationFrame(animate);
     }
 
@@ -197,6 +182,7 @@ document.addEventListener('DOMContentLoaded', () => {
     animate();
 });
 
+// Домашнее задание
 function sumEventDigits(num) {
     let sum = 0;
     while (num > 0) {
