@@ -3,102 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Webinar HW1 JS</title>
+    <title>Webinar Spray</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="CSS/style.css" rel="stylesheet"/>
     <script src="HW1.js"></script>
-
 </head>
 <body class="d-flex justify-content-center align-items-center flex-column min-vh-100">
-
-<audio id="bg-music" loop>
+<audio id="bg-music">
     <source src="./music/1.mp3" type="audio/mpeg">
+    <source src="./music/2.mp3" type="audio/mpeg">
+    <source src="./music/3.mp3" type="audio/mpeg">
+    <source src="./music/4.mp3" type="audio/mpeg">
+    <source src="./music/5.mp3" type="audio/mpeg">
 </audio>
-
 <button id="play-btn" class="btn btn-lg btn-custom-orange mb-4 blinking-button">!!!~НАЖАТЬ~!!!</button>
-
 <h1 class="text-center fs-1">Webinar HW1 JS</h1>
 <p class="text-center fs-3">Open the console to see the results of the JavaScript code.</p>
-
 <canvas id="explosion-canvas"></canvas>
-
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const canvas = document.getElementById('explosion-canvas');
-        const ctx = canvas.getContext('2d');
-        const particles = [];
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-
-        class Particle {
-            constructor(x, y, color) {
-                this.x = x;
-                this.y = y;
-                this.size = Math.random() * 2 + 2;
-                this.color = color;
-                this.alpha = 1;
-                this.velocity = {
-                    x: (Math.random() - 0.5) * 3,
-                    y: (Math.random() - 0.5) * 3
-                };
-            }
-            draw() {
-                ctx.save();
-                ctx.globalAlpha = this.alpha;
-                ctx.fillStyle = this.color;
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.restore();
-            }
-            update() {
-                this.x += this.velocity.x;
-                this.y += this.velocity.y;
-                this.alpha -= 0.00175;
-            }
-        }
-
-        const colors = [
-            '#f58d7d', '#FFD700', '#a2fd07', '#10c1fd', '#FF4500',
-            '#fd0089', '#8e02f8', '#00f5f5', '#012aff', '#E6E6FA',
-            '#FF8C00', '#c31b1b'
-        ];
-
-        function createParticles(x, y) {
-            for (let i = 0; i < 90; i++) {
-                const color = colors[Math.floor(Math.random() * colors.length)];
-                particles.push(new Particle(x, y, color));
-            }
-        }
-
-        function animate() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            for (let i = particles.length - 1; i >= 0; i--) {
-                const particle = particles[i];
-                particle.update();
-                particle.draw();
-                if (particle.alpha <= 0.05) {
-                    particles.splice(i, 1);
-                }
-            }
-            requestAnimationFrame(animate);
-        }
-
-        const audio = document.getElementById('bg-music');
-        const playButton = document.getElementById('play-btn');
-
-        if (playButton) {
-            playButton.addEventListener('click', (event) => {
-                audio.play();
-                playButton.style.display = 'none';
-                const x = window.innerWidth / 2;
-                const y = window.innerHeight / 2;
-                createParticles(x, y);
-            });
-        }
-
-        animate();
-    });
-</script>
 </body>
 </html>

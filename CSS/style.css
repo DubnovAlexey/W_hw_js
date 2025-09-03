@@ -4,6 +4,8 @@ html, body {
 
 body {
     overflow: hidden;
+    background: linear-gradient(to bottom right, rgba(168, 231, 231, 0.33), #e7e5cf) !important;
+
 }
 
 .btn-custom-orange {
