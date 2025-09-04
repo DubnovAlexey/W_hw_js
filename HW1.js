@@ -182,7 +182,9 @@ document.addEventListener('DOMContentLoaded', () => {
     animate();
 });
 
-// Домашнее задание
+// Домашнее задание вебинар
+console.log(`Домашнее задание вебинар`);
+
 function sumEventDigits(num) {
     let sum = 0;
     while (num > 0) {
@@ -196,3 +198,29 @@ function sumEventDigits(num) {
 const num = 1234567;
 const result = sumEventDigits(num);
 console.log(`result = ${result}`);
+
+console.log(`====================`);
+console.log(`Домашнее задание 2 основной курс`);
+
+function bubbleSort(arr) {
+    const n = arr.length;
+    for (let i = 0; i < n - 1; i++) {
+        let flag = false;
+        for (let j = 0; j < n - 1 - i; j++) {
+            if (arr[j] > arr[j + 1]) {
+                const temp = arr[j];
+                arr[j] = arr[j + 1];
+                arr[j + 1] = temp;
+                flag = true;
+            }
+        }
+        if (flag === false) {
+            break;
+        }
+    }
+    return arr;
+}
+
+const arr = [9, 2, 4, 1, 5, 2, 9, 1, 2, 0];
+const res = bubbleSort(arr);
+console.log(`result=${res}`);
