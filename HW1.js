@@ -200,6 +200,8 @@ const result = sumEventDigits(num);
 console.log(`result = ${result}`);
 
 console.log(`====================`);
+
+// Домашнее задание 2 основной курс
 console.log(`Домашнее задание 2 основной курс`);
 
 function bubbleSort(arr) {
@@ -214,7 +216,7 @@ function bubbleSort(arr) {
                 flag = true;
             }
         }
-        if (flag === false) {
+        if (!flag) {
             break;
         }
     }
