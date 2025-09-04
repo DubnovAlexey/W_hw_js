@@ -186,13 +186,21 @@ document.addEventListener('DOMContentLoaded', () => {
 console.log(`Домашнее задание вебинар`);
 
 function sumEventDigits(num) {
-    let sum = 0;
-    while (num > 0) {
-        let lastNum = num % 10;
-        if (lastNum % 2 === 0) sum += lastNum;
-        num = Math.floor(num / 10);
+    if (typeof num !== 'number' || !Number.isFinite(num)) {
+        throw new Error(`Введите целое число`)
     }
-    return sum;
+    if (num < 0) {
+        num = -num;
+    }
+    {
+        let sum = 0;
+        while (num > 0) {
+            let lastNum = num % 10;
+            if (lastNum % 2 === 0) sum += lastNum;
+            num = Math.floor(num / 10);
+        }
+        return sum;
+    }
 }
 
 const num = 1234567;
